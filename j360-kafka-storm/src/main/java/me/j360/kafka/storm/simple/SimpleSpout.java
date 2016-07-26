@@ -15,8 +15,12 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleSpout extends BaseRichSpout{
+
+    Logger logger = LoggerFactory.getLogger(SimpleSpout.class);
 
     /**
      *
@@ -46,6 +50,7 @@ public class SimpleSpout extends BaseRichSpout{
      * 在SpoutTracker类中被调用，每调用一次就可以向storm集群中发射一条数据（一个tuple元组），该方法会被不停的调用
      */
     public void nextTuple() {
+        logger.debug("nextTuple");
         try {
             String msg = info[random.nextInt(11)];
             // 调用发射方法
