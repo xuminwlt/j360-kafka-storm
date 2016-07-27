@@ -12,10 +12,13 @@ import backtype.storm.topology.base.BaseBasicBolt;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SimpleBolt extends BaseBasicBolt {
+
+    Logger logger = LoggerFactory.getLogger(SimpleBolt.class);
 
     /**
      *
@@ -26,7 +29,7 @@ public class SimpleBolt extends BaseBasicBolt {
         try {
             String msg = input.getString(0);
             if (msg != null){
-                //System.out.println("msg="+msg);
+                logger.info("msg="+msg);
                 collector.emit(new Values(msg + "msg is processed!"));
             }
 
