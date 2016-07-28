@@ -30,5 +30,6 @@ package.json
 Gruntfile.js
 config.js
 .sass-cache/
+*.log
 
 

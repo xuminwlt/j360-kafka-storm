@@ -143,3 +143,104 @@ Kafka只是能保证at-least once逻辑，即数据是可能重复的，这个�
 
 当前其实Kafka对consumer的设计不太到位，high-level太不灵活，low-level又太难用，缺乏一个medium-level
 所以在0.9中consumer会被重新design，https://cwiki.apache.org/confluence/display/KAFKA/Consumer+Client+Re-Design
+
+
+
+##storm-kafka##
+使用KafkaSpout
+一个KafkaSpout只能去处理一个topic的内容，所以，它要求初始化时提供如下与topic相关信息：
+Kafka集群中的Broker地址 （IP+Port）
+有两种方法指定：
+1. 使用静态地址，即直接给定Kafka集群中所有Broker信息
+```
+GlobalPartitionInformation info = new GlobalPartitionInformation();
+info.addPartition(0, new Broker("10.1.110.24",9092));
+info.addPartition(0, new Broker("10.1.110.21",9092));
+BrokerHosts brokerHosts = new StaticHosts(info);
+```
+2. 从Zookeeper动态读取
+```
+BrokerHosts brokerHosts = new ZkHosts("10.1.110.24:2181,10.1.110.22:2181");
+```
+推荐使用这种方法，因为Kafka的Broker可能会动态的增减
+
+topic名字
+当前spout的唯一标识Id （以下代称$spout_id）
+zookeeper上用于存储当前处理到哪个Offset了 （以下代称$zk_root)
+当前topic中数据如何解码
+
+了解Kafka的应该知道，Kafka中当前处理到哪的Offset是由客户端自己管理的。所以，后面两个的目的，其实是在zookeeper上建立一个 $zk_root/$spout_id 的节点，其值是一个map，存放了当前Spout处理的Offset的信息。
+
+在Topology中加入Spout的代码：
+```
+String topic = "test";
+String zkRoot = "kafkastorm";
+String spoutId = "myKafka";
+
+SpoutConfig spoutConfig = new SpoutConfig(brokerHosts, topic, zkRoot, spoutId);
+spoutConfig.scheme = new SchemeAsMultiScheme(new TestMessageScheme());
+
+TopologyBuilder builder = new TopologyBuilder();
+builder.setSpout("spout", new KafkaSpout(spoutConfig), spoutNum);
+```
+其中TestMessageScheme就是告诉KafkaSpout如何去解码数据，生成Storm内部传递数据
+```
+public class TestMessageScheme implements Scheme {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestMessageScheme.class);
+
+    @Override
+    public List<Object> deserialize(byte[] bytes) {
+        try {
+            String msg = new String(bytes, "UTF-8");
+            return new Values(msg);
+        } catch (InvalidProtocolBufferException e) {
+            LOGGER.error("Cannot parse the provided message!");
+        }
+
+        //TODO: what happend if returns null?
+        return null;
+    }
+
+    @Override
+    public Fields getOutputFields() {
+        return new Fields("msg");
+    }
+
+}
+```
+
+这个解码方式是与Producer端生成时塞入数据的编码方式配套的。这里我Producer端塞入的是String的byte，所以这里也还原成String，定义输出为一个名叫"msg"的field。
+
+后面就可以自己添加Bolt处理tuple中该field的数据了。
+
+使用TransactionalTridentKafkaSpout
+```
+TransactionalTridentKafkaSpout是为事务性的Trident而用的。用法与KafkaSpout有所不同。
+
+TridentKafkaConfig kafkaConfig = new TridentKafkaConfig(brokerHosts, topic, spoutId);
+kafkaConfig.scheme = new SchemeAsMultiScheme(new TestMessageScheme());
+
+TransactionalTridentKafkaSpout kafkaSpout = new TransactionalTridentKafkaSpout(kafkaConfig);
+
+TridentTopology topology = new TridentTopology();
+topology.newStream("test_str", kafkaSpout).shuffle().each(new Fields("msg", new PrintFunction());
+```
+
+看到它并没有要求我们提供zkRoot，因为直接代码里面写死了…… -_-T
+地址是 /transactional/<STREAM_NAME>/<Spout_Id>,在上面的例子中，就是  /transactional/test_str/myKafaka
+
+
+常见问题
+1. 本地模式无法保存Offset
+```
+KafkaSpout初始化时，会去取spoutConfig.zkServers 和 spoutConfig.zkPort 变量的值，而该值默认是没塞的，所以是空，那么它就会去取当前运行的Storm所配置的zookeeper地址和端口，而本地运行的Storm，是一个临时的zookeeper实例，并不会真正持久化。所以，每次关闭后，数据就没了。
+本地模式，要显示的去配置
+
+spoutConfig.zkServers = new ArrayList<String>(){{
+                add("10.1.110.20");
+                add("10.1.110.21");
+                add("10.1.110.24");
+            }};
+spoutConfig.zkPort = 2181;
+```
