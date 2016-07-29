@@ -38,19 +38,19 @@ public class LogAnalysisTopology {
                 Fields("str"),new JsonProjectFunction(jsonFields), jsonFields);
         // drop theunparsed JSON to reducetuple size
         parsedStream=parsedStream.project(jsonFields);
-        EWMA ewma = newEWMA().sliding(1.0,
+        EWMA ewma = new EWMA().sliding(1.0,
                 EWMA.Time.MINUTES).withAlpha(EWMA.ONE_MINUTE_ALPHA);
-        StreamaverageStream =parsedStream.each(new Fields("timestamp"),
+        Stream averageStream = parsedStream.each(new Fields("timestamp"),
                 new MovingAverageFunction(ewma,
-                EWMA.Time.MINUTES),newFields("average"));
-        ThresholdFilterFunction tff = newThresholdFilterFunction(50D);
-        StreamthresholdStream =averageStream.each(new Fields("average"), tff,
+                EWMA.Time.MINUTES),new Fields("average"));
+        ThresholdFilterFunction tff = new ThresholdFilterFunction(50D);
+        Stream thresholdStream =averageStream.each(new Fields("average"), tff,
                 new Fields("change","threshold"));
-        StreamfilteredStream =
-        thresholdStream.each(newFields("change"), newBooleanFilter());
+        Stream filteredStream =
+        thresholdStream.each(new Fields("change"), new BooleanFilter());
         filteredStream.each(filteredStream.getOutputFields(),
-                new XMPPFunction(newNotifyMessageMapper()), new Fields());
-        returntopology.build();
+                new XMPPFunction(new NotifyMessageMapper()), new Fields());
+        return topology.build();
 
     }
 
@@ -63,7 +63,7 @@ public class LogAnalysisTopology {
         conf.put(XMPPFunction.XMPP_TO,"tgoetz@budreau.local");
         conf.setMaxSpoutPending(5);
         if (args.length ==0) {
-            LocalClustercluster = new LocalCluster();
+            LocalCluster cluster = new LocalCluster();
             cluster.submitTopology("log-analysis", conf, buildTopology());
             } else {
             conf.setNumWorkers(3);
