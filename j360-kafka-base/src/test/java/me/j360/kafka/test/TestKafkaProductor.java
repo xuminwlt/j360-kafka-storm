@@ -1,6 +1,7 @@
 package me.j360.kafka.test;
 
 
+import me.j360.kafka.base.Contants;
 import me.j360.kafka.base.util.KafkaUtil;
 
 /**
@@ -16,6 +17,7 @@ public class TestKafkaProductor {
     }
 
     public static void kafka(){
-        KafkaUtil.send("topic_send", new byte[]{1, 1});
+        KafkaUtil.send(Contants.TOPIC.Send, "kafka test product".getBytes());
+        KafkaUtil.send(Contants.TOPIC.Send, "kafka test product".getBytes());
     }
 }

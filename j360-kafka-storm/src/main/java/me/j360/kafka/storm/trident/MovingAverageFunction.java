@@ -18,14 +18,16 @@ public class MovingAverageFunction extends
     private static final Logger LOG = LoggerFactory.getLogger(BaseFunction.class);
     private EWMA ewma;
     private EWMA.Time emitRatePer;
-    public MovingAverageFunction(EWMA ewma,EWMA.Time emitRatePer){
+
+    public MovingAverageFunction(EWMA ewma, EWMA.Time emitRatePer) {
         this.ewma = ewma;
         this.emitRatePer = emitRatePer;
     }
+
     public void execute(TridentTuple tuple,
                         TridentCollector collector) {
         this.ewma.mark(tuple.getLong(0));
-        LOG.debug("Rate: {}",this.ewma.getAverageRatePer(this.emitRatePer));
+        LOG.debug("Rate: {}", this.ewma.getAverageRatePer(this.emitRatePer));
         collector.emit(new Values(this.ewma.getAverageRatePer(this.emitRatePer)));
     }
 }

@@ -17,20 +17,24 @@ public class ThresholdFilterFunction extends
         BaseFunction {
     private static final Logger LOG =
             LoggerFactory.getLogger(ThresholdFilterFunction.class);
+
     private static enum State {
         BELOW, ABOVE;
     }
+
     private State last = State.BELOW;
     private double threshold;
-    public ThresholdFilterFunction(double threshold){
+
+    public ThresholdFilterFunction(double threshold) {
         this.threshold = threshold;
     }
+
     public void execute(TridentTuple tuple,
                         TridentCollector collector) {
         double val = tuple.getDouble(0);
-        State newState = val <this.threshold ? State.BELOW : State.ABOVE;
-        boolean stateChange = this.last !=newState;
-        collector.emit(new Values(stateChange,threshold));
+        State newState = val < this.threshold ? State.BELOW : State.ABOVE;
+        boolean stateChange = this.last != newState;
+        collector.emit(new Values(stateChange, threshold));
         this.last = newState;
         LOG.debug("State change? -->{}", stateChange);
     }
