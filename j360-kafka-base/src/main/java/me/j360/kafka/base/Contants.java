@@ -13,4 +13,7 @@ public class Contants {
     }
 
 
+    public final static String kafkaUrl = "172.16.10.113:9092";
+    public final static String zkUrl = "172.16.10.113:2181";
+
 }

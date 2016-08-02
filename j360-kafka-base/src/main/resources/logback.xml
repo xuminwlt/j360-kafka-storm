@@ -29,6 +29,7 @@
     <!-- 日志输出级别 -->
     <root level="DEBUG">
         <appender-ref ref="ROLLING" />
+        <appender-ref ref="STDOUT" />
     </root>
 
 </configuration>
