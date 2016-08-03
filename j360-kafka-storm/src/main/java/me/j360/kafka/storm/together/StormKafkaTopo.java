@@ -41,7 +41,7 @@ public class StormKafkaTopo {
         TopologyBuilder builder = new TopologyBuilder();
         builder.setSpout("spout", new KafkaSpout(spoutConfig));
         builder.setBolt("bolt", new SenqueceBolt()).shuffleGrouping("spout");
-        builder.setBolt("kafkabolt", new KafkaBolt<String, Integer>()).shuffleGrouping("bolt");
+        //builder.setBolt("kafkabolt", new KafkaBolt<String, Integer>()).shuffleGrouping("bolt");
 
         if (args != null && args.length > 0) {
             conf.setNumWorkers(3);
