@@ -28,7 +28,7 @@ public class KafkaProductExample {
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         for(int i = 0; i < 100; i++)
-            producer.send(new ProducerRecord<String, String>(Contants.TOPIC.Send, Integer.toString(i), Integer.toString(i)));
+            producer.send(new ProducerRecord<String, String>(Contants.TOPIC.Send, Integer.toString(i), Integer.toString(i+1)));
 
         producer.close();
     }
