@@ -1,4 +1,4 @@
-package me.j360.kafka.storm.trident;
+package me.j360.kafka.storm.simpletrident;
 
 import storm.trident.operation.BaseFilter;
 import storm.trident.tuple.TridentTuple;

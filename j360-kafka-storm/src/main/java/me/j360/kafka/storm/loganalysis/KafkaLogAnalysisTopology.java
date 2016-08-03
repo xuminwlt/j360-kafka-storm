@@ -9,7 +9,6 @@ import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.utils.Utils;
 import me.j360.kafka.storm.Contants;
-import me.j360.kafka.storm.newversion.SimpleBolt;
 import storm.kafka.*;
 import storm.kafka.bolt.KafkaBolt;
 

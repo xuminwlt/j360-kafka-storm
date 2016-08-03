@@ -1,7 +1,6 @@
 package me.j360.kafka.storm.loganalysis;
 
 import me.j360.kafka.storm.Contants;
-import me.j360.kafka.storm.trident.EWMA;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;

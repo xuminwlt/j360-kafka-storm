@@ -1,4 +1,4 @@
-package me.j360.kafka.storm.trident;
+package me.j360.kafka.storm.simpletrident;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.SmackException;

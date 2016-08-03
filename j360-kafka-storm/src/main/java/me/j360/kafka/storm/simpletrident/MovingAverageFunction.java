@@ -1,4 +1,4 @@
-package me.j360.kafka.storm.trident;
+package me.j360.kafka.storm.simpletrident;
 
 import backtype.storm.tuple.Values;
 import org.slf4j.Logger;

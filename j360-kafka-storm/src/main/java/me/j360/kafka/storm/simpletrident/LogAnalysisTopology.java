@@ -1,4 +1,4 @@
-package me.j360.kafka.storm.trident;
+package me.j360.kafka.storm.simpletrident;
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -6,14 +6,14 @@ import backtype.storm.StormSubmitter;
 import backtype.storm.generated.StormTopology;
 import backtype.storm.spout.SchemeAsMultiScheme;
 import backtype.storm.tuple.Fields;
-import storm.kafka.KafkaConfig;
+import me.j360.kafka.storm.Contants;
+import storm.kafka.BrokerHosts;
 import storm.kafka.StringScheme;
+import storm.kafka.ZkHosts;
 import storm.kafka.trident.OpaqueTridentKafkaSpout;
 import storm.kafka.trident.TridentKafkaConfig;
 import storm.trident.Stream;
 import storm.trident.TridentTopology;
-
-import java.util.Arrays;
 
 /**
  * Package: me.j360.kafka.storm.trident
@@ -23,19 +23,19 @@ import java.util.Arrays;
  */
 public class LogAnalysisTopology {
 
-    /*public static StormTopology buildTopology() {
-        TridentTopology topology = new TridentTopology();
-        KafkaConfig.StaticHosts kafkaHosts = KafkaConfig.StaticHosts.fromHostString(
-                Arrays.asList(new String[]{"testserver"}), 1);
-        TridentKafkaConfig spoutConf = new TridentKafkaConfig(kafkaHosts, "log-analysis");
-        //spoutConf.scheme= newStringScheme();
+    public static StormTopology buildTopology() {
+        BrokerHosts zk = new ZkHosts(Contants.zkUrl);
+        TridentKafkaConfig spoutConf = new TridentKafkaConfig(zk, Contants.TOPIC.Send);
         spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
-        spoutConf.forceStartOffsetTime(-1);
         OpaqueTridentKafkaSpout spout = new OpaqueTridentKafkaSpout(spoutConf);
+
+        TridentTopology topology = new TridentTopology();
+        //kafka-stream 表示这些Tuple的处理信息在Zookeeper上的存储路径
         Stream spoutStream = topology.newStream("kafka-stream", spout);
         Fields jsonFields = new Fields("level", "timestamp", "message", "logger");
         Stream parsedStream = spoutStream.each(new
                 Fields("str"), new JsonProjectFunction(jsonFields), jsonFields);
+
         // drop theunparsed JSON to reducetuple size
         parsedStream = parsedStream.project(jsonFields);
         EWMA ewma = new EWMA().sliding(1.0,
@@ -70,5 +70,5 @@ public class LogAnalysisTopology {
             StormSubmitter.submitTopology(args[0],
                     conf, buildTopology());
         }
-    }*/
+    }
 }

@@ -1,11 +1,10 @@
-package me.j360.kafka.storm.trident;
+package me.j360.kafka.storm.simpletrident;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import kafka.producer.KeyedMessage;
 import kafka.producer.Producer;
 import kafka.producer.ProducerConfig;
-import scala.collection.Seq;
 
 import java.util.Properties;
 
