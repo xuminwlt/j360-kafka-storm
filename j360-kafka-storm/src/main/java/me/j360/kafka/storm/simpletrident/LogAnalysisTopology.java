@@ -20,6 +20,11 @@ import storm.trident.TridentTopology;
  * User: min_xu
  * Date: 16/7/28 下午11:20
  * 说明：
+ *
+ * 1.记录日志数据到Apache Kafka和Storm
+   2.把现有应用程序的日志数据给Storm进行分析
+   3.使用Trident实现指数加权移动平均
+   4.使用storm和XMPP协议发送警报和通知
  */
 public class LogAnalysisTopology {
 
