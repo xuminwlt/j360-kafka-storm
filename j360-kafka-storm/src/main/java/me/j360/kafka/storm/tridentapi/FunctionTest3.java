@@ -9,6 +9,8 @@ import storm.trident.tuple.TridentTuple;
  * User: min_xu
  * Date: 16/8/3 下午8:15
  * 说明：
+ [1, Jack, 186107, Boy]
+ [3, Lay, 186745, Gril]
  */
 public class FunctionTest3 extends BaseFunction {
 

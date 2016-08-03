@@ -25,13 +25,21 @@ import storm.trident.testing.FixedBatchSpout;
  */
 public class TridentTopylogy {
 
-    static FixedBatchSpout spout = new FixedBatchSpout(new Fields("name", "idName", "tel"),
-            3, new Values("Jack", "1", "186107"), new Values("Tome", "2", "1514697"), new Values(
-            "Lay", "3", "186745"), new Values("Lucy", "4", "1396478"));
+    static FixedBatchSpout spout = new FixedBatchSpout(
+            new Fields("name", "idName", "tel"),
+            3,
+            new Values("Jack", "1", "186107"),
+            new Values("Tome", "2", "1514697"),
+            new Values("Lay", "3", "186745"),
+            new Values("Lucy", "4", "1396478"));
 
-    static FixedBatchSpout spout2 = new FixedBatchSpout(new Fields("sex", "idSex"),
-            3, new Values("Boy", "1"), new Values("Boy", "2"), new Values(
-            "Gril", "3"), new Values("Gril", "4"));
+    static FixedBatchSpout spout2 = new FixedBatchSpout(
+            new Fields("sex", "idSex"),
+            3,
+            new Values("Boy", "1"),
+            new Values("Boy", "2"),
+            new Values("Gril", "3"),
+            new Values("Gril", "4"));
 
     public static void main(String[] args) {
         //设置是否循环
@@ -56,9 +64,11 @@ public class TridentTopylogy {
          * 那么结果将是以spout为数据基础，结果会将上面的4个数据信息全部打出
          */
         Stream st3 = topology.join(st, new Fields("idName"), st2, new Fields("idSex"), new Fields("Res_id", "Res_name", "Res_tel", "Res_sex"));
+
         //创建一个方法，为了显示合并和过滤后的结果
         FunctionTest3 t3 = new FunctionTest3();
-        st3.each(new Fields("Res_id", "Res_name", "Res_tel", "Res_sex"), ft).each(new Fields("Res_id", "Res_name", "Res_tel", "Res_sex"), t3, new Fields("out1_id", "out1_name", "ou1t_tel", "out1_sex"));
+        st3.each(new Fields("Res_id", "Res_name", "Res_tel", "Res_sex"), ft)
+                .each(new Fields("Res_id", "Res_name", "Res_tel", "Res_sex"), t3, new Fields("out1_id", "out1_name", "ou1t_tel", "out1_sex"));
 
 
         Config cf = new Config();
