@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Package: me.j360.kafka.storm.trident
  * User: min_xu
  * Date: 16/7/28 下午11:17
- * 说明：
+ * 说明：计算移动平均数
  */
 public class EWMA implements Serializable {
 

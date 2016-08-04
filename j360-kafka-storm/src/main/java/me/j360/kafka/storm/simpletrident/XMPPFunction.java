@@ -44,8 +44,7 @@ public class XMPPFunction extends BaseFunction {
         super.prepare(conf, context);
         this.to = (String) conf.get(XMPP_TO);
 
-        ConnectionConfiguration config = new
-                ConnectionConfiguration((String) conf.get(XMPP_SERVER));
+        /*ConnectionConfiguration config = new SimpleConnectionConfiguration.Builder<>((String) conf.get(XMPP_SERVER));
         this.xmppConnection = new SimpleXMPPConnection(config);
         try {
             this.xmppConnection.connect();
@@ -59,7 +58,7 @@ public class XMPPFunction extends BaseFunction {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void execute(TridentTuple tuple,

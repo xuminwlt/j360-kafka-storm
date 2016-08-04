@@ -32,31 +32,34 @@ public class LogAnalysisTopology {
         BrokerHosts zk = new ZkHosts(Contants.zkUrl);
         TridentKafkaConfig spoutConf = new TridentKafkaConfig(zk, Contants.TOPIC.Send);
         spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
+
+        //模糊或者不透明事务的kafka的spout
         OpaqueTridentKafkaSpout spout = new OpaqueTridentKafkaSpout(spoutConf);
 
         TridentTopology topology = new TridentTopology();
         //kafka-stream 表示这些Tuple的处理信息在Zookeeper上的存储路径
         Stream spoutStream = topology.newStream("kafka-stream", spout);
         Fields jsonFields = new Fields("level", "timestamp", "message", "logger");
-        Stream parsedStream = spoutStream.each(new
-                Fields("str"), new JsonProjectFunction(jsonFields), jsonFields);
+
+        //通过each分割成多个fields   [INFO,1370918376296, test, foo]
+        Stream parsedStream = spoutStream.each(new Fields("str"), new JsonProjectFunction(jsonFields), jsonFields);
 
         // drop theunparsed JSON to reducetuple size
         parsedStream = parsedStream.project(jsonFields);
         EWMA ewma = new EWMA().sliding(1.0,
                 EWMA.Time.MINUTES).withAlpha(EWMA.ONE_MINUTE_ALPHA);
         Stream averageStream = parsedStream.each(new Fields("timestamp"),
-                new MovingAverageFunction(ewma,
-                        EWMA.Time.MINUTES), new Fields("average"));
+                new MovingAverageFunction(ewma, EWMA.Time.MINUTES), new Fields("average"));
+
+        //阈值跟踪函数
         ThresholdFilterFunction tff = new ThresholdFilterFunction(50D);
         Stream thresholdStream = averageStream.each(new Fields("average"), tff,
                 new Fields("change", "threshold"));
-        Stream filteredStream =
-                thresholdStream.each(new Fields("change"), new BooleanFilter());
-        filteredStream.each(filteredStream.getOutputFields(),
-                new XMPPFunction(new NotifyMessageMapper()), new Fields());
-        return topology.build();
 
+        //阈值状态触发函数，true -> 发送xmpp通知
+        Stream filteredStream = thresholdStream.each(new Fields("change"), new BooleanFilter());
+        filteredStream.each(filteredStream.getOutputFields(), new XMPPFunction(new NotifyMessageMapper()), new Fields());
+        return topology.build();
     }
 
     public static void main(String[] args) throws

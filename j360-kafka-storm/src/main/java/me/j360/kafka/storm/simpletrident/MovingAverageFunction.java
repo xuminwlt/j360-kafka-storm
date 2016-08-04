@@ -11,7 +11,7 @@ import storm.trident.tuple.TridentTuple;
  * Package: me.j360.kafka.storm.trident
  * User: min_xu
  * Date: 16/7/29 上午10:44
- * 说明：
+ * 说明：移动平局加强指数
  */
 public class MovingAverageFunction extends
         BaseFunction {
