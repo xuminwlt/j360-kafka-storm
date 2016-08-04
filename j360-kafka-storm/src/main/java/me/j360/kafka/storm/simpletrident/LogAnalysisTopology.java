@@ -19,7 +19,7 @@ import storm.trident.TridentTopology;
  * Package: me.j360.kafka.storm.trident
  * User: min_xu
  * Date: 16/7/28 下午11:20
- * 说明：
+ * 说明：一个简单的trident的storm的实现
  *
  * 1.记录日志数据到Apache Kafka和Storm
    2.把现有应用程序的日志数据给Storm进行分析
