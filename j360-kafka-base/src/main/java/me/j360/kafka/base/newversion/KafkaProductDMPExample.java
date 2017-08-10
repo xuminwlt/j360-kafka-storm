@@ -17,7 +17,7 @@ public class KafkaProductDMPExample {
 
     public static void main(String args[]){
         Properties props = new Properties();
-        props.put("bootstrap.servers", Contants.kafkaUrl);
+        props.put("bootstrap.servers", Contants.testKafkaUrl);
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);
@@ -26,7 +26,7 @@ public class KafkaProductDMPExample {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        String sss = "{\"uid\":3,\"device_id\":\"068b746ed4620d25e26055a9f804385f\",\"vp_id\":5,\"event_time\":1430204612405,\"os_type\":\"Android\",\"play_count\":6}";
+        String sss = "{\"targetId\":100,\"type\":\"play\",\"duration\":100,\"playDuration\":90,\"view\":\"recommend\",\"count\":1,\"sourceIp\":\"\",\"uid\":96630108742967296,\"clientAgent\":\"{\\\"appName\\\":\\\"b35d7751bc8ef46b87892a6abcb8f8\\\",\\\"version\\\":\\\"3.0.4\\\",\\\"buildVersion\\\":2,\\\"osNumber\\\":1,\\\"osVersion\\\":\\\"9.0.2\\\",\\\"deviceModel\\\":\\\"6S\\\",\\\"deviceUUID\\\":\\\"AAAAAAA\\\",\\\"net\\\":null,\\\"channel\\\":null}\",\"timestamp\":1502118468307}";
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
         for(int i = 0; i < 1000; i++)
             producer.send(new ProducerRecord<String, String>(Contants.TOPIC.DMP, Integer.toString(0), sss));

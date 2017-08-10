@@ -11,6 +11,8 @@ public class Contants {
         public final static String DMP1 = "dmp-1";
     }
     public final static String kafkaUrl = "localhost:9092";
+    public final static String testKafkaUrl = "123.59.27.205:9092";
+
     public final static String zkUrl = "172.16.10.201:2181";
 
 }
